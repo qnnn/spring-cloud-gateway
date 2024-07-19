@@ -278,7 +278,6 @@ public class GatewayAutoConfiguration {
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
 	public RemoveCachedBodyWebExceptionHandler removeCachedBodyWebExceptionHandler() {
 		return new RemoveCachedBodyWebExceptionHandler();
 	}
