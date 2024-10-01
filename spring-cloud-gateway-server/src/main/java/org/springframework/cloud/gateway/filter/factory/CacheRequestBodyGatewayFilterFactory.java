@@ -76,7 +76,8 @@ public class CacheRequestBodyGatewayFilterFactory
 			@Override
 			public String toString() {
 				return filterToStringCreator(CacheRequestBodyGatewayFilterFactory.this)
-						.append("Body class", config.getBodyClass()).toString();
+					.append("Body class", config.getBodyClass())
+					.toString();
 			}
 		};
 	}
