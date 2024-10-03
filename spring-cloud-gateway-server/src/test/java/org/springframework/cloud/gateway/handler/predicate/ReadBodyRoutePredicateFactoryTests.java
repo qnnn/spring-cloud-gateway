@@ -72,6 +72,15 @@ public class ReadBodyRoutePredicateFactoryTests {
 	}
 
 	@Test
+	public void multipleReadBodyMatchingTest() {
+		Event messageChannelEvent = new Event("message.channels", "bar");
+
+		webClient.post().uri("/events").body(BodyInserters.fromValue(messageChannelEvent))
+				.header("repeatable").exchange().expectStatus().isOk().expectBody()
+				.jsonPath("$.headers.World").isEqualTo("Hello");
+	}
+
+	@Test
 	public void toStringFormat() {
 		Config config = new Config();
 		config.setInClass(String.class);
@@ -95,6 +104,14 @@ public class ReadBodyRoutePredicateFactoryTests {
 							.filters(f -> f.setPath("/messageChannel/events")).uri("lb://messageChannel"))
 					.route(p -> p.path("/events").and().method(HttpMethod.POST).and()
 							.readBody(Event.class, eventPredicate("message")).filters(f -> f.setPath("/message/events"))
+							.uri("lb://message"))
+					.route(p -> p.order(-100).path("/events").and().method(HttpMethod.POST).and()
+							.readBody(String.class, string -> false).and()
+							.header("repeatable")
+							.uri("lb://message"))
+					.route(p -> p.order(-99).path("/events").and().method(HttpMethod.POST).and()
+							.readBody(Event.class, eventPredicate("message")).and()
+							.header("repeatable").filters(f -> f.setPath("/message/events"))
 							.uri("lb://message"))
 					.build();
 		}
